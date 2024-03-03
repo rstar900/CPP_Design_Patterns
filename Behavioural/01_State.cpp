@@ -70,7 +70,7 @@ public:
     // Contructor
     Draft()
     {
-        "[Draft State:] Welcome!"
+        "[Draft State:] Welcome!" << std::endl;
     }
     
 };
@@ -88,22 +88,31 @@ protected:
     }
     virtual void viewContent() override
     {
-        // TODO
+        std::cout << "[InReview State:] Cannot view post yet." << std::endl;
     }
     virtual void addContent(std::string& content) override
     {
-        // TODO
+        std::cout << "[InReview State:] Cannot edit post unless in Draft state." << std::endl;
     }
     virtual void reviewContent(bool isPassing) override
     {
-        // TODO
+        if (isPassing) 
+        {
+            std::cout << "[InReview State:] Review successful, changing to Published state..." << std::endl;
+            m_post->changeState(new Published());
+        }
+        else
+        {
+            std::cout << "[InReview State:] Review unsuccessful, changing back to draft state..." << std::endl;
+            m_post->changeState(new Draft());
+        }    
     }
 
 public:
     // Contructor
     InReview()
     {
-        "[InReview State:] Welcome!"
+        "[InReview State:] Welcome!" << std::endl;
     }
     
 };
@@ -136,7 +145,7 @@ public:
     // Contructor
     Published()
     {
-        "[Published State:] Welcome!"
+        "[Published State:] Welcome!" << std::endl;
     }
 };
 
