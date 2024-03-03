@@ -12,8 +12,6 @@
 // And https://refactoring.guru/design-patterns/state/cpp/example
 // And https://doc.rust-lang.org/book/ch17-03-oo-design-patterns.html
 
-// TODO: Look at how the friend class declaration for all possible states can be avoided in Post class to adhere to OCP
-
 #include <iostream>
 
 // Forward declaration of Post class, so that PostState recognizes it
@@ -50,30 +48,18 @@ public:
 // The Context class
 class Post 
 {
-    // To allow state objects to change internal state of the post object
-    friend class Draft;
-    friend class InReview;
-    friend class Published;
-
     // The private State object pointer
     PostState* m_postState{};
 
+public:
+    
     // The actual content of the post
     std::string m_content{};
 
-    // Private function to change the state
-    void changeState(PostState* postState)
-    {
-        if (m_postState != nullptr)
-        {
-            delete m_postState; 
-        }
-        m_postState = postState;
-        m_postState->setContext(this);
-    }
-
-public:
     Post();
+
+    // Function to change the state
+    void changeState(PostState* postState);
 
     // State dependent functions
     // We delegate the state based functionality to the respective state objects
@@ -150,6 +136,16 @@ Post::Post()
 {
     // Set initial state to be Draft
     m_postState = new Draft();
+    m_postState->setContext(this);
+}
+
+void Post::changeState(PostState* postState)
+{
+    if (m_postState != nullptr)
+    {
+        delete m_postState; 
+    }
+    m_postState = postState;
     m_postState->setContext(this);
 }
 
