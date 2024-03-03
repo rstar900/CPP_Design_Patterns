@@ -53,15 +53,24 @@ protected:
     }
     virtual void viewContent() override
     {
-        // TODO
+        std::cout << "[Draft State:] Cannot view post yet." << std::endl;
     }
     virtual void addContent(std::string& content) override
     {
-        // TODO
+        std::cout << "[Draft State:] Added content, changing to InReview state..." << std::endl;
+        m_post->m_content.append(content);
+        m_post->changeState(new InReview());
     }
     virtual void reviewContent(bool isPassing) override
     {
-        // TODO
+        std::cout << "[Draft State:] Cannot review post yet." << std::endl;
+    }
+
+public:
+    // Contructor
+    Draft()
+    {
+        "[Draft State:] Welcome!"
     }
     
 };
@@ -89,6 +98,13 @@ protected:
     {
         // TODO
     }
+
+public:
+    // Contructor
+    InReview()
+    {
+        "[InReview State:] Welcome!"
+    }
     
 };
 
@@ -115,7 +131,13 @@ protected:
     {
         // TODO
     }
-    
+
+public:
+    // Contructor
+    Published()
+    {
+        "[Published State:] Welcome!"
+    }
 };
 
 // The Context class
@@ -137,7 +159,7 @@ class Post
         {
             delete m_postState; 
         }
-        this->m_postState = postState;
+        m_postState = postState;
         m_postState->setContext(this);
     }
 
@@ -164,6 +186,12 @@ public:
     void reviewContent(bool isPassing)
     {
         m_postState->reviewContent(isPassing);
+    }
+
+    // Destructor
+    ~Post()
+    {
+        delete m_postState;
     }
 
 };
