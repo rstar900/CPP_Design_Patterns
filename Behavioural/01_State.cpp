@@ -130,15 +130,15 @@ protected:
     }
     virtual void viewContent() override
     {
-        // TODO
+        std::cout << "[Published State:] " << m_post->m_content << std::endl;
     }
     virtual void addContent(std::string& content) override
     {
-        // TODO
+        std::cout << "[Published State:] Cannot edit post unless in Draft state." << std::endl;
     }
     virtual void reviewContent(bool isPassing) override
     {
-        // TODO
+        std::cout << "[Published State:] Cannot review post after publishing." << std::endl;
     }
 
 public:
