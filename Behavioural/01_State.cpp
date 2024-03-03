@@ -34,6 +34,12 @@ protected:
         m_post = post;
     }
 
+    // Function to change state of Post object
+    void changeState(PostState* post);
+
+    // Function to access content of Post
+    std::string& getContent();
+
     // State dependent functions
     virtual void viewContent() = 0;
     virtual void addContent(std::string& content) = 0;
@@ -48,18 +54,20 @@ public:
 // The Context class
 class Post 
 {
+    // For allowing PostState concrete classes to access changeState()
+    friend class PostState;
+
+    // The actual content of the post
+    std::string m_content{};
+    
     // The private State object pointer
     PostState* m_postState{};
 
-public:
-    
-    // The actual content of the post
-    std::string m_content{};
-
-    Post();
-
     // Function to change the state
     void changeState(PostState* postState);
+
+public:
+    Post();
 
     // State dependent functions
     // We delegate the state based functionality to the respective state objects
@@ -130,6 +138,22 @@ public:
     }
 };
 
+
+// ---- PostState changeState functions implementation Start ----
+
+void PostState::changeState(PostState* postState)
+{
+    m_post->changeState(postState);
+}
+
+std::string& PostState::getContent()
+{
+    return m_post->m_content;
+}
+
+// ---- PostState functions implementation End ----
+
+
 // ---- Post public function Implementations starts ----
 
 Post::Post() 
@@ -177,8 +201,8 @@ void Draft::viewContent()
 void Draft::addContent(std::string& content)
 {
     std::cout << "[Draft State:] Added content, changing to InReview state..." << std::endl;
-    m_post->m_content.append(content);
-    m_post->changeState(new InReview());
+    getContent().append(content);
+    changeState(new InReview());
 }
 
 void Draft::reviewContent(bool isPassing)
@@ -206,12 +230,12 @@ void InReview::reviewContent(bool isPassing)
     if (isPassing) 
     {
         std::cout << "[InReview State:] Review successful, changing to Published state..." << std::endl;
-        m_post->changeState(new Published());
+        changeState(new Published());
     }
     else
     {
         std::cout << "[InReview State:] Review unsuccessful, changing back to draft state..." << std::endl;
-        m_post->changeState(new Draft());
+        changeState(new Draft());
     }    
 }
 
@@ -222,7 +246,7 @@ void InReview::reviewContent(bool isPassing)
 
 void Published::viewContent()
 {
-    std::cout << "[Published State:] " << m_post->m_content << std::endl;
+    std::cout << "[Published State:] " << getContent() << std::endl;
 }
 
 void Published::addContent(std::string& content)
