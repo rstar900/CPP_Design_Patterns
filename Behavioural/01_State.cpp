@@ -12,6 +12,8 @@
 // And https://refactoring.guru/design-patterns/state/cpp/example
 // And https://doc.rust-lang.org/book/ch17-03-oo-design-patterns.html
 
+// TODO: Divide into separate files for ease in readability
+
 #include <iostream>
 
 // Forward declaration of Post class, so that PostState recognizes it
