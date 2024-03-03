@@ -12,7 +12,7 @@
 // And https://refactoring.guru/design-patterns/state/cpp/example
 // And https://doc.rust-lang.org/book/ch17-03-oo-design-patterns.html
 
-// TODO: Optimizations for setContext() and bring the Published State methods out for uniformity
+// TODO: Optimizations for setContext() for uniformity
 
 #include <iostream>
 
@@ -147,22 +147,10 @@ class Published final: public PostState
 
     // overrides
 protected:
-    void setContext(Post* post)
-    {
-        m_post = post;
-    }
-    virtual void viewContent() override
-    {
-        std::cout << "[Published State:] " << m_post->m_content << std::endl;
-    }
-    virtual void addContent(std::string& content) override
-    {
-        std::cout << "[Published State:] Cannot edit post unless in Draft state." << std::endl;
-    }
-    virtual void reviewContent(bool isPassing) override
-    {
-        std::cout << "[Published State:] Cannot review post after publishing." << std::endl;
-    }
+    void setContext(Post* post);
+    virtual void viewContent();
+    virtual void addContent(std::string& content);
+    virtual void reviewContent(bool isPassing);
 
 public:
     // Contructor
@@ -259,6 +247,33 @@ void InReview::reviewContent(bool isPassing)
 
 // ---- InReview function implementations End ----
 
+
+// ---- Published function implementations Start ----
+
+void Published::setContext(Post* post)
+{
+    m_post = post;
+}
+
+void Published::viewContent()
+{
+    std::cout << "[Published State:] " << m_post->m_content << std::endl;
+}
+
+void Published::addContent(std::string& content)
+{
+    std::cout << "[Published State:] Cannot edit post unless in Draft state." << std::endl;
+}
+
+void Published::reviewContent(bool isPassing) 
+{
+    std::cout << "[Published State:] Cannot review post after publishing." << std::endl;
+}
+
+// ---- Published function implementations End ----
+
+
+
 int main()
 {
     Post post;
@@ -268,11 +283,15 @@ int main()
     post.viewContent();
 
     post.reviewContent(false);
-
+    post.reviewContent(true);
+    
     std::string content_addition{"\nSome more additions"};
     post.addContent(content_addition);
     post.viewContent();
 
     post.reviewContent(true);
+
+    post.addContent(content_addition);
+    post.reviewContent(false);
     post.viewContent();
 }
