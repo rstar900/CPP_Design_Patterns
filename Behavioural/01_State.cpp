@@ -12,24 +12,29 @@
 // And https://refactoring.guru/design-patterns/state/cpp/example
 // And https://doc.rust-lang.org/book/ch17-03-oo-design-patterns.html
 
-// TODO: Optimizations for setContext() for uniformity
+// TODO: Look at how the friend class declaration for all possible states can be avoided in Post class to adhere to OCP
 
 #include <iostream>
 
 // Forward declaration of Post class, so that PostState recognizes it
 class Post;
 
-// The State interface
+// The State abstract class
 class PostState
 {
 
-    // Private Context pointer will be in concrete States
-    // Also declare Post to be a friend class in concrete States as well
+    // Declare Post to be a friend class to be able to change Context for PostState concrete objects
     friend class Post;
 
 protected:
+    // Keep the Post pointer as protected in abstract class itself
+    Post* m_post{};
+
     // function to set Context
-    virtual void setContext(Post* post) = 0;
+    void setContext(Post* post)
+    {
+        m_post = post;
+    }
 
     // State dependent functions
     virtual void viewContent() = 0;
@@ -91,15 +96,8 @@ public:
 
 class Draft final: public PostState
 {
-    // To allow post objects to change the internal context
-    friend class Post;
-
-    // Private Context pointer
-    Post* m_post{};
-
     // overrides
 protected:
-    void setContext(Post* post);
     virtual void viewContent() override;
     virtual void addContent(std::string& content) override;
     virtual void reviewContent(bool isPassing) override;
@@ -115,15 +113,8 @@ public:
 
 class InReview final: public PostState
 {
-    // To allow post objects to change the internal context
-    friend class Post;
-
-    // Private Context pointer
-    Post* m_post{};
-
     // overrides
 protected:
-    void setContext(Post* post);
     virtual void viewContent() override;
     virtual void addContent(std::string& content) override;
     virtual void reviewContent(bool isPassing) override;
@@ -139,15 +130,8 @@ public:
 
 class Published final: public PostState
 {
-    // To allow post objects to change the internal context
-    friend class Post;
-
-    // Private Context pointer
-    Post* m_post{};
-
     // overrides
 protected:
-    void setContext(Post* post);
     virtual void viewContent();
     virtual void addContent(std::string& content);
     virtual void reviewContent(bool isPassing);
@@ -189,11 +173,6 @@ void Post::reviewContent(bool isPassing)
 
 // ---- Draft function implementations Start ----
 
-void Draft::setContext(Post* post)
-{
-    m_post = post;
-}
-
 void Draft::viewContent()
 {
     std::cout << "[Draft State:] Cannot view post yet." << std::endl;
@@ -215,11 +194,6 @@ void Draft::reviewContent(bool isPassing)
 
 
 // ---- InReview function implementations Start ----
-
-void InReview::setContext(Post* post)
-{
-    m_post = post;
-}
 
 void InReview::viewContent()
 {
@@ -250,11 +224,6 @@ void InReview::reviewContent(bool isPassing)
 
 // ---- Published function implementations Start ----
 
-void Published::setContext(Post* post)
-{
-    m_post = post;
-}
-
 void Published::viewContent()
 {
     std::cout << "[Published State:] " << m_post->m_content << std::endl;
@@ -271,7 +240,6 @@ void Published::reviewContent(bool isPassing)
 }
 
 // ---- Published function implementations End ----
-
 
 
 int main()
