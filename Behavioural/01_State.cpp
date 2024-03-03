@@ -1,11 +1,15 @@
 // Context class -> object that should act differently based on different states
 // Consider a Post object (Context) which has states : Draft, InReview, and Published
 // One should be able to only view the contents of the post in Published state 
-// So, the viewContent() function behaves differently based on the state of Post
-// Also, the addContent() function should allow adding post in Draft state only
-// There should be a public function so that an admin can review and change the state either to Draft (failiure) or Published
+// So, the viewContent(), addContent() and reviewContent() functions behave differently based on the state of Post
+// The state is managed by independent State objects (classes deriving PostState interface in this case)
+// The addContent() function should allow adding post content in Draft state only
+// The viewContent() function should only work in Published state
+// The reviewContent() function takes in a boolean representing whether to pass or fail the review and works only in InReview state
+// If the review fails, the Post object goes back into draft state, else Published
 
 // Inspiration taken from https://refactoring.guru/design-patterns/state
+// And https://refactoring.guru/design-patterns/state/cpp/example
 // And https://doc.rust-lang.org/book/ch17-03-oo-design-patterns.html
 
 #include <iostream>
@@ -26,7 +30,7 @@ protected:
     // State dependent functions
     virtual void viewContent() = 0;
     virtual void addContent(std::string& content) = 0;
-    virtual void reviewContent() = 0;
+    virtual void reviewContent(bool isPassing) = 0;
 
 public:
     // Virtual destructor
@@ -55,7 +59,7 @@ protected:
     {
         // TODO
     }
-    virtual void reviewContent() override
+    virtual void reviewContent(bool isPassing) override
     {
         // TODO
     }
@@ -81,7 +85,7 @@ protected:
     {
         // TODO
     }
-    virtual void reviewContent() override
+    virtual void reviewContent(bool isPassing) override
     {
         // TODO
     }
@@ -107,7 +111,7 @@ protected:
     {
         // TODO
     }
-    virtual void reviewContent() override
+    virtual void reviewContent(bool isPassing) override
     {
         // TODO
     }
@@ -122,6 +126,9 @@ class Post
 
     // The private State object pointer
     PostState* m_postState{};
+
+    // The actual content of the post
+    std::string m_content{};
 
     // Private function to change the state
     void changeState(PostState* postState)
@@ -154,9 +161,9 @@ public:
         m_postState->addContent(content);
     }
 
-    void reviewContent()
+    void reviewContent(bool isPassing)
     {
-        m_postState->reviewContent();
+        m_postState->reviewContent(isPassing);
     }
 
 };
